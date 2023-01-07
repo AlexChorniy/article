@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
-export const Wrapper = styled.article`
+export const Container = styled.div``;
+
+export const Lists = styled.article`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   grid-auto-rows: auto;

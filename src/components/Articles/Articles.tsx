@@ -1,16 +1,19 @@
 import { Data } from '../../models/data';
 import Card from '../Cards';
-import { Wrapper } from './styles';
+import { Container, Lists } from './styles';
+import NavigationBar from '../Navigation';
+import { NavigationR } from '../../models/navigation';
 
-const Articles = ({ data }: { data: Data[] }): JSX.Element => {
+const Articles = ({ data, navClickHandler }: { data: Data[], navClickHandler: NavigationR }): JSX.Element => {
   return (
-    <Wrapper>
-      {data
-        .filter((_, index) => index <= 10)
-        .map(({ title, url, imageUrl, id }) => (
+    <Container>
+      <Lists>
+        {data.map(({ title, url, imageUrl, id }) => (
           <Card key={id} title={title} url={url} imageUrl={imageUrl} />
         ))}
-    </Wrapper>
+      </Lists>
+      <NavigationBar onClickHandler={navClickHandler} />
+    </Container>
   );
 };
 

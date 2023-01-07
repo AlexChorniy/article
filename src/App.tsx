@@ -4,10 +4,11 @@ import { useGetData } from './hooks/useGetData';
 import Articles from './components/Articles/Articles';
 
 function App() {
-  const { data } = useGetData();
+  const { data, navigate } = useGetData();
+
   return (
     <Main>
-      <Articles data={data} />
+      <Articles data={data} navClickHandler={navigate} />
     </Main>
   );
 }
