@@ -7,3 +7,5 @@ export interface InitialData {
 export interface Data extends InitialData {
     id: number
 }
+
+export type DataType = Data[] | []

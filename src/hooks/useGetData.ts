@@ -1,12 +1,12 @@
 import { workWithAPI } from '../api/api';
 import { useEffect, useState } from 'react';
-import {Data} from "../models/data";
+import {Data, DataType} from "../models/data";
 import {workWithLS} from "../utils/workWithLocalStorage";
 import {ARTICLE_LS_KEY} from "../utils/constants";
 import {addIdToData} from "../utils/addIdToData";
 
-export const useGetData = (): { data: Data[] | [], loading: boolean } => {
-  const [data, setData] = useState<Data[] | []>([]);
+export const useGetData = (): { data: DataType, loading: boolean } => {
+  const [data, setData] = useState<DataType>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
