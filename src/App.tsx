@@ -1,11 +1,14 @@
 import React from 'react';
-import './App.css';
+import { Main } from './App.styled';
+import { useGetData } from './hooks/useGetData';
+import Articles from './components/Articles';
 
 function App() {
+  const { data } = useGetData();
   return (
-    <div className="App">
-      123445
-    </div>
+    <Main>
+      <Articles data={data} />
+    </Main>
   );
 }
 
