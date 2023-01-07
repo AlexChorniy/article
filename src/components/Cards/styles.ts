@@ -18,7 +18,6 @@ export const ButtonsBlock = styled.div`
   gap: 15px;
   justify-content: center;
   align-items: center;
-  background-color: darkolivegreen;
 `;
 export const TopBlock = styled.div`
   height: 90%;
