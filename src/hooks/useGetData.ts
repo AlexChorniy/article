@@ -3,7 +3,7 @@ import {useEffect, useState} from 'react';
 import {Data, DataType, DeleteById} from "../models/data";
 import {workWithLS} from "../utils/workWithLocalStorage";
 import {ARTICLE_LS_KEY, DELETED_ID_KEYS, PAGE_KEY, PAGES_AMOUNT} from "../utils/constants";
-import {addIdToData} from "../utils/addIdToData";
+import {addIdToData, roundUpArrayLength} from "../utils/addIdToData";
 import {NavigationModel, NavigationVariables} from "../models/navigation";
 
 type useGetDataType = { navigate: NavigationVariables; data: Data[] | []; loading: boolean, deleteCardById: DeleteById }
@@ -42,7 +42,7 @@ export const useGetData = (): useGetDataType => {
             if (direction === NavigationModel.next) {
                 const nextPages = pageNumber + PAGES_AMOUNT;
 
-                if (nextPages <= Math.ceil(dataWithId.length / PAGES_AMOUNT) * PAGES_AMOUNT) {
+                if (nextPages <= roundUpArrayLength(dataWithId)) {
                     workWithLS.setData(PAGE_KEY, nextPages);
                 }
 
