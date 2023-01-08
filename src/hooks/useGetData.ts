@@ -18,9 +18,13 @@ export const useGetData = (): { navigate: NavigationR; data: Data[] | []; loadin
                 .getData()
                 .then((res) => {
                     const dataWithId = addIdToData(res.data as Data[]).filter(({id}) => id <= 10);
-                    setData(dataWithId);
-                    setLoading(false);
-                    workWithLS.setData(ARTICLE_LS_KEY, dataWithId);
+
+                    if (dataWithId.length > 0) {
+                        setData(dataWithId);
+                        setLoading(false);
+                        workWithLS.setData(ARTICLE_LS_KEY, dataWithId);
+                    }
+
                 })
                 .catch((error) => console.log(error));
         } else {
@@ -33,16 +37,17 @@ export const useGetData = (): { navigate: NavigationR; data: Data[] | []; loadin
         const firstId = data[0].id;
         const lastId = data[data.length - 1].id;
         setLoading(true);
-
-
+        
         if (direction === NavigationModel.next) {
             workWithAPI
                 .getData()
                 .then((res) => {
                     const dataWithId = addIdToData(res.data as Data[]).filter(({id}) => id >= lastId + 1 && id < lastId + 11);
-                    setData(dataWithId);
-                    setLoading(false);
-                    workWithLS.setData(ARTICLE_LS_KEY, dataWithId);
+                    if (dataWithId.length > 0) {
+                        setData(dataWithId);
+                        setLoading(false);
+                        workWithLS.setData(ARTICLE_LS_KEY, dataWithId);
+                    }
                 })
                 .catch((error) => console.log(error))
         } else {
@@ -50,10 +55,11 @@ export const useGetData = (): { navigate: NavigationR; data: Data[] | []; loadin
                 .getData()
                 .then((res) => {
                     const dataWithId = addIdToData(res.data as Data[]).filter(({id}) => id <= firstId - 1 && id > firstId - 11);
-                    console.log(dataWithId);
-                    setData(dataWithId);
-                    setLoading(false);
-                    workWithLS.setData(ARTICLE_LS_KEY, dataWithId);
+                    if (dataWithId.length > 0) {
+                        setData(dataWithId);
+                        setLoading(false);
+                        workWithLS.setData(ARTICLE_LS_KEY, dataWithId);
+                    }
                 })
                 .catch((error) => console.log(error))
         }
