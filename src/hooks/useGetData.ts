@@ -1,12 +1,12 @@
 import {workWithAPI} from '../api/api';
 import {useEffect, useState} from 'react';
-import {Data, DataType, DeleteById} from "../models/data";
+import {DataType, DeleteById} from "../models/data";
 import {workWithLS} from "../utils/workWithLocalStorage";
 import {ARTICLE_LS_KEY, DELETED_ID_KEYS, PAGE_KEY, PAGES_AMOUNT} from "../utils/constants";
 import {addIdToData, roundUpArrayLength} from "../utils/addIdToData";
 import {NavigationModel, NavigationVariables} from "../models/navigation";
 
-type useGetDataType = { navigate: NavigationVariables; data: Data[] | []; loading: boolean, deleteCardById: DeleteById }
+type useGetDataType = { navigate: NavigationVariables; data: DataType; loading: boolean, deleteCardById: DeleteById }
 
 export const useGetData = (): useGetDataType => {
     const [data, setData] = useState<DataType>([]);
@@ -18,7 +18,7 @@ export const useGetData = (): useGetDataType => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
         (async () => {
             try {
-                const filteredData = addIdToData((await workWithAPI.getData()).data as Data[] | [])
+                const filteredData = addIdToData((await workWithAPI.getData()).data as DataType)
                     .filter((item) => !removedIds.includes(item.id))
                     .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1)
                 if (filteredData.length > 0) {
@@ -36,7 +36,7 @@ export const useGetData = (): useGetDataType => {
     const navigate = async (direction: NavigationModel) => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
         try {
-            const dataWithId = addIdToData((await workWithAPI.getData()).data as Data[] | [])
+            const dataWithId = addIdToData((await workWithAPI.getData()).data as DataType)
                 .filter((item) => !removedIds.includes(item.id));
 
             if (direction === NavigationModel.next) {
@@ -86,7 +86,7 @@ export const useGetData = (): useGetDataType => {
 
         try {
             const currentDeletedIds: number[] | undefined = workWithLS.getData(DELETED_ID_KEYS);
-            const filteredData = addIdToData((await workWithAPI.getData()).data as Data[] | [])
+            const filteredData = addIdToData((await workWithAPI.getData()).data as DataType)
                 .filter((item) => !currentDeletedIds!.includes(item.id))
                 .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1);
             setData(filteredData);
