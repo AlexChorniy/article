@@ -16,7 +16,6 @@ export const useGetData = (): useGetDataType => {
 
     useEffect(() => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
-        workWithLS.setData(PAGE_KEY, PAGES_AMOUNT);
         (async () => {
             try {
                 const filteredData = addIdToData((await workWithAPI.getData()).data as Data[] | [])
