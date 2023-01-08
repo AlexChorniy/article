@@ -16,7 +16,7 @@ export const useGetData = (): useGetDataType => {
 
     useEffect(() => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
-        workWithLS.setData(PAGE_KEY, 10);
+        workWithLS.setData(PAGE_KEY, PAGES_AMOUNT);
         (async () => {
             try {
                 const filteredData = addIdToData((await workWithAPI.getData()).data as Data[] | [])
@@ -36,45 +36,44 @@ export const useGetData = (): useGetDataType => {
 
     const navigate = async (direction: NavigationModel) => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
-        const dataWithId = addIdToData((await workWithAPI.getData()).data as Data[] | [])
-            .filter((item) => !removedIds.includes(item.id));
-        setLoading(true);
+        try {
+            const dataWithId = addIdToData((await workWithAPI.getData()).data as Data[] | [])
+                .filter((item) => !removedIds.includes(item.id));
 
-        if (direction === NavigationModel.next) {
-            const nextPages = pageNumber + PAGES_AMOUNT;
+            setLoading(true);
 
-            if (nextPages <= Math.ceil(dataWithId.length / PAGES_AMOUNT) * PAGES_AMOUNT) {
-                workWithLS.setData(PAGE_KEY, nextPages);
-            }
+            if (direction === NavigationModel.next) {
+                const nextPages = pageNumber + PAGES_AMOUNT;
 
-            try {
+                if (nextPages <= Math.ceil(dataWithId.length / PAGES_AMOUNT) * PAGES_AMOUNT) {
+                    workWithLS.setData(PAGE_KEY, nextPages);
+                }
+
                 const filteredData = dataWithId
                     .filter((_, index) => index >= nextPages - PAGES_AMOUNT && index < nextPages);
+
                 if (filteredData.length > 0) {
                     setData(filteredData);
                     setLoading(false);
                     workWithLS.setData(ARTICLE_LS_KEY, filteredData);
                 }
-            } catch (e) {
-                console.log(e);
-            }
-        } else {
-            const previousPages = pageNumber - PAGES_AMOUNT;
 
-            if (previousPages > 0) {
-                workWithLS.setData(PAGE_KEY, previousPages);
-            }
+            } else {
+                const previousPages = pageNumber - PAGES_AMOUNT;
 
-            try {
+                if (previousPages > 0) {
+                    workWithLS.setData(PAGE_KEY, previousPages);
+                }
+
                 const filteredData = dataWithId.filter((_, index) => index <= previousPages - 1 && index > previousPages - PAGES_AMOUNT - 1);
                 if (filteredData.length > 0) {
                     setData(filteredData);
                     setLoading(false);
                     workWithLS.setData(ARTICLE_LS_KEY, filteredData);
                 }
-            } catch (e) {
-                console.log(e);
             }
+        } catch (e) {
+            console.log(e);
         }
     }
 

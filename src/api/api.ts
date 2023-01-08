@@ -2,10 +2,10 @@ import axios, {AxiosResponse} from 'axios';
 
 const URL = 'https://storage.googleapis.com/aller-structure-task/article_list.json';
 
-type WorkWithAPI = {
+type WorkWithAPIType = {
     getData: <T extends []>() => Promise<AxiosResponse<T>>
 }
 
-export const workWithAPI: WorkWithAPI = {
+export const workWithAPI: WorkWithAPIType = {
     getData: () => axios(URL),
 };
