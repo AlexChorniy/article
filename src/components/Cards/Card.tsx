@@ -1,4 +1,4 @@
-import { ButtonsBlock, Container, Image, Link, Title, TopBlock } from './styles';
+import { BottomBlock, ButtonsBlock, Container, Image, Link, Title, TopBlock } from './styles';
 import { Button } from '../Button/Button';
 
 type CardType = {
@@ -16,12 +16,14 @@ const Card = ({ title, url, imageUrl, onDeleteHandler, onEditHandler }: CardType
         <Link href={url} target="_blank" rel="noopener noreferrer">
           <Image alt="article image" src={imageUrl} />
         </Link>
-        <Title>{title}</Title>
       </TopBlock>
-      <ButtonsBlock>
-        <Button onClick={() => onEditHandler(title)}>Edit</Button>
-        <Button onClick={() => onDeleteHandler()}>Delete</Button>
-      </ButtonsBlock>
+      <BottomBlock>
+        <Title>{title}</Title>
+        <ButtonsBlock>
+          <Button onClick={() => onEditHandler(title)}>Edit</Button>
+          <Button onClick={() => onDeleteHandler()}>Delete</Button>
+        </ButtonsBlock>
+      </BottomBlock>
     </Container>
   );
 };

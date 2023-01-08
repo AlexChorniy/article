@@ -40,8 +40,6 @@ export const useGetData = (): useGetDataType => {
             const dataWithId = addIdToData((await workWithAPI.getData()).data as Data[] | [])
                 .filter((item) => !removedIds.includes(item.id));
 
-            setLoading(true);
-
             if (direction === NavigationModel.next) {
                 const nextPages = pageNumber + PAGES_AMOUNT;
 
@@ -66,6 +64,7 @@ export const useGetData = (): useGetDataType => {
                 }
 
                 const filteredData = dataWithId.filter((_, index) => index <= previousPages - 1 && index > previousPages - PAGES_AMOUNT - 1);
+
                 if (filteredData.length > 0) {
                     setData(filteredData);
                     setLoading(false);

@@ -11,4 +11,6 @@ export const Lists = styled.article`
   grid-gap: 0.5rem;
   justify-content: center;
   align-items: center;
+  padding-left: 10px;
+  padding-right: 10px;
 `;
