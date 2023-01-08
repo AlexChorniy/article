@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
-export const Container = styled.div``;
+export const Container = styled.div`
+  padding-bottom: 5px;
+`;
 
 export const Lists = styled.article`
   display: grid;
