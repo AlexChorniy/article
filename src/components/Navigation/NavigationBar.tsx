@@ -1,5 +1,4 @@
-import { Button } from '../Button/Button';
-import { Nav } from './styles';
+import { Button, Nav } from './styles';
 import { NavigationModel, NavigationVariables } from '../../models/navigation';
 
 const NavigationBar = ({ onClickHandler }: { onClickHandler: NavigationVariables }): JSX.Element => {

@@ -1,5 +1,4 @@
-import { BottomBlock, ButtonsBlock, Container, Image, Link, Title, TopBlock } from './styles';
-import { Button } from '../Button/Button';
+import { BottomBlock, Button, ButtonsBlock, Container, Image, Link, Title, TopBlock } from './styles';
 
 type CardType = {
   title: string,
