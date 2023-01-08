@@ -12,46 +12,44 @@ export const useGetData = (): useGetDataType => {
     const [data, setData] = useState<DataType>([]);
     const [loading, setLoading] = useState(true);
 
-    const dataFromLS = workWithLS.getData(ARTICLE_LS_KEY);
-
+    const removedIds: number[] = workWithLS.getData(DELETED_ID_KEYS) || [];
 
     useEffect(() => {
+        const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
         workWithLS.setData(PAGE_KEY, 10);
-
-        if (!dataFromLS) {
-            workWithAPI
-                .getData()
-                .then((res) => {
-                    const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
-                    const dataWithId = addIdToData(res.data as Data[]).filter((_, index) => index <= pageNumber - 1 && index > pageNumber - 11);
-
-                    if (dataWithId.length > 0) {
-                        setData(dataWithId);
-                        setLoading(false);
-                        workWithLS.setData(ARTICLE_LS_KEY, dataWithId);
-                    }
-
-                })
-                .catch((error) => console.log(error));
-        } else {
-            setData(dataFromLS as Data[]);
-            setLoading(false);
-        }
+        (async () => {
+            try {
+                const filteredData = addIdToData((await workWithAPI.getData()).data as Data[] | [])
+                    .filter((item) => !removedIds.includes(item.id))
+                    .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1)
+                if (filteredData.length > 0) {
+                    setData(filteredData);
+                    setLoading(false);
+                    workWithLS.setData(ARTICLE_LS_KEY, filteredData);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        })()
     }, []);
+
 
     const navigate = async (direction: NavigationModel) => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
-        const dataWithId = addIdToData((await workWithAPI.getData()).data as Data[] | []);
+        const dataWithId = addIdToData((await workWithAPI.getData()).data as Data[] | [])
+            .filter((item) => !removedIds.includes(item.id));
         setLoading(true);
 
         if (direction === NavigationModel.next) {
             const nextPages = pageNumber + PAGES_AMOUNT;
+
             if (nextPages <= Math.ceil(dataWithId.length / PAGES_AMOUNT) * PAGES_AMOUNT) {
                 workWithLS.setData(PAGE_KEY, nextPages);
             }
 
             try {
-                const filteredData = dataWithId.filter((_, index) => index >= nextPages - PAGES_AMOUNT && index < nextPages);
+                const filteredData = dataWithId
+                    .filter((_, index) => index >= nextPages - PAGES_AMOUNT && index < nextPages);
                 if (filteredData.length > 0) {
                     setData(filteredData);
                     setLoading(false);
@@ -62,6 +60,7 @@ export const useGetData = (): useGetDataType => {
             }
         } else {
             const previousPages = pageNumber - PAGES_AMOUNT;
+
             if (previousPages > 0) {
                 workWithLS.setData(PAGE_KEY, previousPages);
             }
@@ -80,20 +79,23 @@ export const useGetData = (): useGetDataType => {
     }
 
     const deleteCardById = async (id: number) => {
-        const data = workWithLS.getData(DELETED_ID_KEYS) as [];
-        if (!data) {
-            workWithLS.setData(DELETED_ID_KEYS, [id]);
+        const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
 
+        if (!removedIds) {
+            workWithLS.setData(DELETED_ID_KEYS, [id]);
+        } else {
+            workWithLS.setData(DELETED_ID_KEYS, [...removedIds, id]);
         }
-        workWithLS.setData(DELETED_ID_KEYS, [...data, id]);
+
         try {
-            const response = await workWithAPI.getData();
-            console.log(response.data);
+            const currentDeletedIds: number[] | undefined = workWithLS.getData(DELETED_ID_KEYS);
+            const filteredData = addIdToData((await workWithAPI.getData()).data as Data[] | [])
+                .filter((item) => !currentDeletedIds!.includes(item.id))
+                .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1);
+            setData(filteredData);
         } catch (e) {
             console.log(e);
         }
-
-        setData((prev) => prev.filter((item) => item.id !== id));
     }
 
     return {data, loading, navigate, deleteCardById};
