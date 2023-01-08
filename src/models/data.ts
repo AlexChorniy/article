@@ -9,3 +9,5 @@ export interface Data extends InitialData {
 }
 
 export type DataType = Data[] | []
+
+export type DeleteById = (id: number) => void

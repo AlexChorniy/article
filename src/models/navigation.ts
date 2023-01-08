@@ -3,4 +3,4 @@ export enum NavigationModel {
     next = 'next'
 }
 
-export type NavigationR = (direction: NavigationModel) => void
+export type NavigationVariables = (direction: NavigationModel) => void

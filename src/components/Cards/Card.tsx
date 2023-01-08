@@ -1,7 +1,15 @@
 import { ButtonsBlock, Container, Image, Link, Title, TopBlock } from './styles';
 import { Button } from '../Button/Button';
 
-const Card = ({ title, url, imageUrl }: { title: string, url: string, imageUrl: string }): JSX.Element => {
+type CardType = {
+  title: string,
+  url: string,
+  imageUrl: string,
+  onDeleteHandler: () => void,
+  onEditHandler: (text: string) => void,
+};
+
+const Card = ({ title, url, imageUrl, onDeleteHandler, onEditHandler }: CardType): JSX.Element => {
   return (
     <Container>
       <TopBlock>
@@ -11,8 +19,8 @@ const Card = ({ title, url, imageUrl }: { title: string, url: string, imageUrl: 
         <Title>{title}</Title>
       </TopBlock>
       <ButtonsBlock>
-        <Button>Edit</Button>
-        <Button>Delete</Button>
+        <Button onClick={() => onEditHandler(title)}>Edit</Button>
+        <Button onClick={() => onDeleteHandler()}>Delete</Button>
       </ButtonsBlock>
     </Container>
   );
