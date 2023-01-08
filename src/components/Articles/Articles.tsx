@@ -1,5 +1,5 @@
 import { Data, DeleteById } from '../../models/data';
-import Card from '../Cards';
+import Card from '../Card';
 import { Container, Lists } from './styles';
 import NavigationBar from '../Navigation';
 import { NavigationVariables } from '../../models/navigation';
