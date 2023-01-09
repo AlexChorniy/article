@@ -15,7 +15,9 @@ const NavigationBar = ({ onClickHandler }: { onClickHandler: NavigationVariables
     <Nav>
       <Button onClick={() => onClickHandler(NavigationModel.previous)}>&lt; Previous</Button>
       <Button onClick={() => onClickHandler(NavigationModel.next)}>Next &gt;</Button>
-      <Button onClick={onClearHandler}>Clear LS</Button>
+      <Button disabled={true} onClick={onClearHandler}>
+        Clear LS
+      </Button>
     </Nav>
   );
 };
