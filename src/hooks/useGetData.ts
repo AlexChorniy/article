@@ -30,7 +30,7 @@ export const useGetData = (): useGetDataType => {
     useEffect(() => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || (workWithLS.setData(PAGE_KEY, PAGES_AMOUNT), PAGES_AMOUNT);
         const dataFromLS = workWithLS.getData(ARTICLE_LS_KEY) as DataType || [];
-        const dataOriginalFromLS = (workWithLS.getData(ORIGINAL_DATA_KEY) as DataType)?.filter((item) => !removedIds.includes(item.id));
+        const dataOriginalFromLS = (workWithLS.getData(ORIGINAL_DATA_KEY) as DataType || []).filter((item) => !removedIds.includes(item.id));
 
         if (originalData.length === 0 && dataOriginalFromLS?.length > 0) {
             setOriginalData(dataOriginalFromLS);
@@ -148,8 +148,11 @@ export const useGetData = (): useGetDataType => {
     }
 
     const update = ({text, id}: { text: string; id: number }) => {
+        const updatedOriginal = (workWithLS.getData(ORIGINAL_DATA_KEY) as DataType || [])
+            .map((item) => item.id === id ? ({...item, title: text}) : item)
         const updatedData = data.map((item) => item.id === id ? ({...item, title: text}) : item);
         workWithLS.setData(ARTICLE_LS_KEY, updatedData);
+        workWithLS.setData(ORIGINAL_DATA_KEY, updatedOriginal);
         setData(updatedData);
     }
 
