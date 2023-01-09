@@ -55,7 +55,7 @@ export const useGetData = (): useGetDataType => {
     }, []);
 
 
-    const navigate = async (direction: NavigationModel) => {
+    const navigate = (direction: NavigationModel) => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
         try {
             const dataWithId = originalData
@@ -97,7 +97,7 @@ export const useGetData = (): useGetDataType => {
         }
     }
 
-    const deleteCardById = async (id: number) => {
+    const deleteCardById = (id: number) => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
 
         if (!removedIds) {
@@ -113,6 +113,11 @@ export const useGetData = (): useGetDataType => {
                 .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1);
             setData(filteredData);
             workWithLS.setData(ARTICLE_LS_KEY, filteredData);
+
+            if (filteredData.length === 0) {
+                navigate(NavigationModel.previous)
+            }
+            
         } catch (e) {
             console.log(e);
         }
