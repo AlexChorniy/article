@@ -132,9 +132,9 @@ export const useGetData = (): useGetDataType => {
             workWithLS.setData(DELETED_ID_KEYS, [...removedIds, id]);
         }
 
-        const currentDeletedIds: number[] | undefined = workWithLS.getData(DELETED_ID_KEYS);
+        const currentDeletedIds: number[] = workWithLS.getData(DELETED_ID_KEYS) || [];
         const filteredData = originalData
-            .filter((item) => !currentDeletedIds!.includes(item.id))
+            .filter((item) => !currentDeletedIds.includes(item.id))
             .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1);
 
         if (filteredData.length > 0) {
@@ -144,6 +144,7 @@ export const useGetData = (): useGetDataType => {
 
         if (filteredData.length === 0 && pageNumber !== PAGES_AMOUNT) {
             navigate(NavigationModel.previous)
+            workWithNavigationButtons(roundUpArrayLength(filteredData), workWithLS.getData(PAGE_KEY) as number)
         }
     }
 
