@@ -15,7 +15,8 @@ export const useGetData = (): useGetDataType => {
     const removedIds: number[] = workWithLS.getData(DELETED_ID_KEYS) || [];
 
     useEffect(() => {
-        const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
+        const pageNumber: number = workWithLS.getData(PAGE_KEY) || (workWithLS.setData(PAGE_KEY, PAGES_AMOUNT), PAGES_AMOUNT);
+
         (async () => {
             try {
                 const filteredData = addIdToData((await workWithAPI.getData()).data as DataType)
