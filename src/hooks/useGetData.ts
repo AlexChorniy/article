@@ -2,8 +2,8 @@ import {workWithAPI} from '../api/api';
 import {useEffect, useState} from 'react';
 import {DataType, DeleteById} from "../models/data";
 import {workWithLS} from "../utils/workWithLocalStorage";
-import {ARTICLE_LS_KEY, DELETED_ID_KEYS, PAGE_KEY, PAGES_AMOUNT} from "../utils/constants";
-import {addIdToData, roundUpArrayLength} from "../utils/addIdToData";
+import {ARTICLE_LS_KEY, DELETED_ID_KEYS, ORIGINAL_DATA_KEY, PAGE_KEY, PAGES_AMOUNT} from "../utils/constants";
+import {helpers, roundUpArrayLength} from "../utils/helpers";
 import {NavigationModel, NavigationVariables} from "../models/navigation";
 
 type useGetDataType = {
@@ -22,42 +22,49 @@ export const useGetData = (): useGetDataType => {
     const [data, setData] = useState<DataType>([]);
     const [loading, setLoading] = useState(true);
     const [isError, setIsError] = useState(false);
-    const [isPrevButtonDisable, setIsPrevButtonDisable] = useState(true);
+    const [isPrevButtonDisable, setIsPrevButtonDisable] = useState(false);
     const [isNextButtonDisable, setIsNextButtonDisable] = useState(false);
 
     const removedIds: number[] = workWithLS.getData(DELETED_ID_KEYS) || [];
 
-
     useEffect(() => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || (workWithLS.setData(PAGE_KEY, PAGES_AMOUNT), PAGES_AMOUNT);
         const dataFromLS = workWithLS.getData(ARTICLE_LS_KEY) as DataType;
+        const dataOriginalFromLS = workWithLS.getData(ORIGINAL_DATA_KEY) as DataType;
+
+        if (originalData.length === 0) {
+            setOriginalData(dataOriginalFromLS);
+        }
 
         if (dataFromLS?.length > 0) {
             setData(dataFromLS);
             setLoading(false);
-        }
+            workWithNavigationButtons(roundUpArrayLength(dataOriginalFromLS), workWithLS.getData(PAGE_KEY) as number)
 
-        (async () => {
-            try {
-                const getOriginal = addIdToData((await workWithAPI.getData()).data as DataType);
-                workWithNavigationButtons(roundUpArrayLength(getOriginal), workWithLS.getData(PAGE_KEY) as number)
-                setOriginalData(getOriginal);
-                const filteredData = getOriginal
-                    .filter((item) => !removedIds.includes(item.id))
-                    .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1)
-                if (filteredData.length > 0) {
-                    setData(filteredData);
-                    setLoading(false);
-                    workWithLS.setData(ARTICLE_LS_KEY, filteredData);
+        } else {
+            (async () => {
+                try {
+                    const getOriginal = helpers((await workWithAPI.getData()).data as DataType);
+                    workWithNavigationButtons(roundUpArrayLength(getOriginal), workWithLS.getData(PAGE_KEY) as number)
+                    setOriginalData(getOriginal);
+                    workWithLS.setData(ORIGINAL_DATA_KEY, getOriginal);
+                    const filteredData = getOriginal
+                        .filter((item) => !removedIds.includes(item.id))
+                        .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1)
+                    if (filteredData.length > 0) {
+                        setData(filteredData);
+                        setLoading(false);
+                        workWithLS.setData(ARTICLE_LS_KEY, filteredData);
+                    }
+                } catch (e) {
+                    if (e) {
+                        setIsError(true);
+                        setLoading(false);
+                    }
+                    console.log(e);
                 }
-            } catch (e) {
-                if (e) {
-                    setIsError(true);
-                    setLoading(false);
-                }
-                console.log(e);
-            }
-        })()
+            })()
+        }
     }, []);
 
 
@@ -105,15 +112,15 @@ export const useGetData = (): useGetDataType => {
     }
 
     const workWithNavigationButtons = (maxValueOfArray: number, page: number) => {
-        // const page = (workWithLS.getData(PAGE_KEY) as number);/
-        // console.log(page);
-        if (page <= PAGES_AMOUNT) {
-            setIsPrevButtonDisable(true);
-        } else if (page >= maxValueOfArray) {
-            setIsNextButtonDisable(true);
-        } else {
+        if (page > PAGES_AMOUNT && page < maxValueOfArray) {
             setIsPrevButtonDisable(false);
             setIsNextButtonDisable(false);
+        } else if (page <= PAGES_AMOUNT) {
+            setIsPrevButtonDisable(true);
+            setIsNextButtonDisable(false);
+        } else {
+            setIsNextButtonDisable(true);
+            setIsPrevButtonDisable(false);
         }
     }
 
