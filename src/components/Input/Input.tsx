@@ -1,6 +1,6 @@
 import { SyntheticEvent } from 'react';
 import { Container, TextInput } from './Input.styled';
-import { Button } from '../styles';
+import { Button } from '../Component.styles';
 
 type InputType = {
   onChangeHandler?: (event: SyntheticEvent) => void,

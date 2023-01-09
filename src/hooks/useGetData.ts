@@ -9,10 +9,12 @@ import {NavigationModel, NavigationVariables} from "../models/navigation";
 type useGetDataType = {
     navigate: NavigationVariables;
     data: DataType;
-    loading: boolean,
+    loading: boolean;
     deleteCardById: DeleteById,
     update: ({text, id}: { text: string, id: number }) => void;
     isError: boolean;
+    isPrevButtonDisable: boolean;
+    isNextButtonDisable: boolean;
 }
 
 export const useGetData = (): useGetDataType => {
@@ -20,6 +22,9 @@ export const useGetData = (): useGetDataType => {
     const [data, setData] = useState<DataType>([]);
     const [loading, setLoading] = useState(true);
     const [isError, setIsError] = useState(false);
+    const [isPrevButtonDisable, setIsPrevButtonDisable] = useState(true);
+    const [isNextButtonDisable, setIsNextButtonDisable] = useState(false);
+
     const removedIds: number[] = workWithLS.getData(DELETED_ID_KEYS) || [];
 
 
@@ -57,43 +62,55 @@ export const useGetData = (): useGetDataType => {
 
     const navigate = (direction: NavigationModel) => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
-        try {
-            const dataWithId = originalData
-                .filter((item) => !removedIds.includes(item.id));
+        const dataWithId = originalData
+            .filter((item) => !removedIds.includes(item.id));
+        const roundedArrayLength = roundUpArrayLength(dataWithId)
 
-            if (direction === NavigationModel.next) {
-                const nextPages = pageNumber + PAGES_AMOUNT;
+        if (direction === NavigationModel.next) {
+            const nextPages = pageNumber + PAGES_AMOUNT;
 
-                if (nextPages <= roundUpArrayLength(dataWithId)) {
-                    workWithLS.setData(PAGE_KEY, nextPages);
-                }
+            workWithNavigationButtons(nextPages, roundedArrayLength);
 
-                const filteredData = dataWithId
-                    .filter((_, index) => index >= nextPages - PAGES_AMOUNT && index < nextPages);
-
-                if (filteredData.length > 0) {
-                    setData(filteredData);
-                    setLoading(false);
-                    workWithLS.setData(ARTICLE_LS_KEY, filteredData);
-                }
-
-            } else {
-                const previousPages = pageNumber - PAGES_AMOUNT;
-
-                if (previousPages > 0) {
-                    workWithLS.setData(PAGE_KEY, previousPages);
-                }
-
-                const filteredData = dataWithId.filter((_, index) => index <= previousPages - 1 && index > previousPages - PAGES_AMOUNT - 1);
-
-                if (filteredData.length > 0) {
-                    setData(filteredData);
-                    setLoading(false);
-                    workWithLS.setData(ARTICLE_LS_KEY, filteredData);
-                }
+            if (nextPages <= roundedArrayLength) {
+                workWithLS.setData(PAGE_KEY, nextPages);
             }
-        } catch (e) {
-            console.log(e);
+
+            const filteredData = dataWithId
+                .filter((_, index) => index >= nextPages - PAGES_AMOUNT && index < nextPages);
+
+            if (filteredData.length > 0) {
+                setData(filteredData);
+                setLoading(false);
+                workWithLS.setData(ARTICLE_LS_KEY, filteredData);
+            }
+
+        } else {
+            const previousPages = pageNumber - PAGES_AMOUNT;
+
+            workWithNavigationButtons(previousPages, roundedArrayLength);
+
+            if (previousPages > 0) {
+                workWithLS.setData(PAGE_KEY, previousPages);
+            }
+
+            const filteredData = dataWithId.filter((_, index) => index <= previousPages - 1 && index > previousPages - PAGES_AMOUNT - 1);
+
+            if (filteredData.length > 0) {
+                setData(filteredData);
+                setLoading(false);
+                workWithLS.setData(ARTICLE_LS_KEY, filteredData);
+            }
+        }
+    }
+
+    const workWithNavigationButtons = (page: number, maxValueOfArray: number) => {
+        if (page <= PAGES_AMOUNT) {
+            setIsPrevButtonDisable(true);
+        } else if (page >= maxValueOfArray) {
+            setIsNextButtonDisable(true);
+        } else {
+            setIsPrevButtonDisable(false);
+            setIsNextButtonDisable(false);
         }
     }
 
@@ -106,20 +123,18 @@ export const useGetData = (): useGetDataType => {
             workWithLS.setData(DELETED_ID_KEYS, [...removedIds, id]);
         }
 
-        try {
-            const currentDeletedIds: number[] | undefined = workWithLS.getData(DELETED_ID_KEYS);
-            const filteredData = originalData
-                .filter((item) => !currentDeletedIds!.includes(item.id))
-                .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1);
+        const currentDeletedIds: number[] | undefined = workWithLS.getData(DELETED_ID_KEYS);
+        const filteredData = originalData
+            .filter((item) => !currentDeletedIds!.includes(item.id))
+            .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1);
+
+        if (filteredData.length > 0) {
             setData(filteredData);
             workWithLS.setData(ARTICLE_LS_KEY, filteredData);
+        }
 
-            if (filteredData.length === 0 && pageNumber !== PAGES_AMOUNT) {
-                navigate(NavigationModel.previous)
-            }
-
-        } catch (e) {
-            console.log(e);
+        if (filteredData.length === 0 && pageNumber !== PAGES_AMOUNT) {
+            navigate(NavigationModel.previous)
         }
     }
 
@@ -129,5 +144,5 @@ export const useGetData = (): useGetDataType => {
         setData(updatedData);
     }
 
-    return {data, loading, navigate, deleteCardById, update, isError};
+    return {data, loading, navigate, deleteCardById, update, isError, isPrevButtonDisable, isNextButtonDisable};
 };

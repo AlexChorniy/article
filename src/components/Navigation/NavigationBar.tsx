@@ -1,10 +1,20 @@
 import { Nav } from './Navigation.styled';
 import { NavigationModel, NavigationVariables } from '../../models/navigation';
-import { Button } from '../styles';
+import { Button, ClearLSButton } from '../Component.styles';
 import { workWithLS } from '../../utils/workWithLocalStorage';
 import { ARTICLE_LS_KEY, DELETED_ID_KEYS, PAGE_KEY } from '../../utils/constants';
 
-const NavigationBar = ({ onClickHandler }: { onClickHandler: NavigationVariables }): JSX.Element => {
+type NavigationBarType = {
+  onClickHandler: NavigationVariables,
+  isPrevButtonDisable: boolean,
+  isNextButtonDisable: boolean,
+};
+
+const NavigationBar = ({
+  onClickHandler,
+  isPrevButtonDisable,
+  isNextButtonDisable,
+}: NavigationBarType): JSX.Element => {
   const onClearHandler = () => {
     workWithLS.removeData(PAGE_KEY);
     workWithLS.removeData(ARTICLE_LS_KEY);
@@ -13,11 +23,13 @@ const NavigationBar = ({ onClickHandler }: { onClickHandler: NavigationVariables
 
   return (
     <Nav>
-      <Button onClick={() => onClickHandler(NavigationModel.previous)}>&lt; Previous</Button>
-      <Button onClick={() => onClickHandler(NavigationModel.next)}>Next &gt;</Button>
-      <Button disabled={true} onClick={onClearHandler}>
-        Clear LS
+      <Button disabled={isPrevButtonDisable} onClick={() => onClickHandler(NavigationModel.previous)}>
+        &lt; Previous
       </Button>
+      <Button disabled={isNextButtonDisable} onClick={() => onClickHandler(NavigationModel.next)}>
+        Next &gt;
+      </Button>
+      <ClearLSButton onClick={onClearHandler}>Clear LS</ClearLSButton>
     </Nav>
   );
 };

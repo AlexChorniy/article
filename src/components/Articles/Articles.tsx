@@ -5,16 +5,26 @@ import NavigationBar from '../Navigation';
 import {NavigationVariables} from '../../models/navigation';
 
 type ArticlesType = {
-    data: Data[],
-    navClickHandler: NavigationVariables,
-    deleteCardById: DeleteById,
-    onEditHandler: ({text, id}: { id: number; text: string }) => void,
+    data: Data[];
+    navClickHandler: NavigationVariables;
+    deleteCardById: DeleteById;
+    onEditHandler: ({text, id}: { id: number; text: string }) => void;
+    isPrevButtonDisable: boolean;
+    isNextButtonDisable: boolean;
 };
 
-const Articles = ({data, navClickHandler, deleteCardById, onEditHandler}: ArticlesType): JSX.Element => {
+const Articles = ({
+                      data,
+                      navClickHandler,
+                      deleteCardById,
+                      onEditHandler,
+                      isPrevButtonDisable,
+                      isNextButtonDisable
+                  }: ArticlesType): JSX.Element => {
     return (
         <Container>
-            <NavigationBar onClickHandler={navClickHandler}/>
+            <NavigationBar onClickHandler={navClickHandler} isPrevButtonDisable={isPrevButtonDisable}
+                           isNextButtonDisable={isNextButtonDisable}/>
             <Lists>
                 {data.map(({title, url, imageUrl, id}) => (
                     <Card

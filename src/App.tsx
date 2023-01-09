@@ -4,7 +4,8 @@ import { useGetData } from './hooks/useGetData';
 import Articles from './components/Articles/Articles';
 
 function App() {
-  const { data, navigate, deleteCardById, update, loading, isError } = useGetData();
+  const { data, navigate, deleteCardById, update, loading, isError, isPrevButtonDisable, isNextButtonDisable } =
+    useGetData();
 
   if (loading) {
     return (
@@ -20,7 +21,14 @@ function App() {
 
   return (
     <Main>
-      <Articles data={data} navClickHandler={navigate} deleteCardById={deleteCardById} onEditHandler={update} />
+      <Articles
+        data={data}
+        navClickHandler={navigate}
+        deleteCardById={deleteCardById}
+        onEditHandler={update}
+        isPrevButtonDisable={isPrevButtonDisable}
+        isNextButtonDisable={isNextButtonDisable}
+      />
     </Main>
   );
 }
