@@ -110,6 +110,7 @@ export const useGetData = (): useGetDataType => {
                 .filter((item) => !currentDeletedIds!.includes(item.id))
                 .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1);
             setData(filteredData);
+            workWithLS.setData(ARTICLE_LS_KEY, filteredData);
         } catch (e) {
             console.log(e);
         }
