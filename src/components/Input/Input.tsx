@@ -1,5 +1,5 @@
 import { SyntheticEvent } from 'react';
-import { Container, TextInput } from './styles';
+import { Container, TextInput } from './Input.styled';
 import { Button } from '../styles';
 
 type InputType = {

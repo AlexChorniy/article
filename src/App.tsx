@@ -4,7 +4,11 @@ import { useGetData } from './hooks/useGetData';
 import Articles from './components/Articles/Articles';
 
 function App() {
-  const { data, navigate, deleteCardById, update } = useGetData();
+  const { data, navigate, deleteCardById, update, loading } = useGetData();
+
+  // if (loading) {
+  //   return <img src={require('./assets/loader.gif')} />;
+  // }
 
   return (
     <Main>

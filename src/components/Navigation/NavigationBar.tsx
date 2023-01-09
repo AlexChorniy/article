@@ -1,4 +1,4 @@
-import { Nav } from './styles';
+import { Nav } from './Navigation.styled';
 import { NavigationModel, NavigationVariables } from '../../models/navigation';
 import { Button } from '../styles';
 

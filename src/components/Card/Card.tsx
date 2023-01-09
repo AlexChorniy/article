@@ -1,4 +1,4 @@
-import {BottomBlock, ButtonsBlock, Container, Image, Link, Title, TopBlock} from './styles';
+import {BottomBlock, ButtonsBlock, Container, Image, Link, Title, TopBlock} from './Card.styled';
 import {SyntheticEvent, useState} from 'react';
 import Input from "../Input";
 import {Button} from "../styles";

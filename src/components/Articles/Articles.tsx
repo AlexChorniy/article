@@ -1,6 +1,6 @@
 import {Data, DeleteById} from '../../models/data';
 import Card from '../Card';
-import {Container, Lists} from './styles';
+import {Container, Lists} from './Articles.styled';
 import NavigationBar from '../Navigation';
 import {NavigationVariables} from '../../models/navigation';
 
