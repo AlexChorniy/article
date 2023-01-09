@@ -1,3 +1,1 @@
-import Component from './Articles';
-
-export default Component;
+export { default } from './Articles';

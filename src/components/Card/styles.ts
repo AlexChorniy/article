@@ -38,7 +38,3 @@ export const TopBlock = styled.div`
 export const BottomBlock = styled.div`
   height: 10%;
 `;
-
-export const Button = styled.button`
-  height: 20px;
-`;

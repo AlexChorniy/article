@@ -6,7 +6,13 @@ import {ARTICLE_LS_KEY, DELETED_ID_KEYS, PAGE_KEY, PAGES_AMOUNT} from "../utils/
 import {addIdToData, roundUpArrayLength} from "../utils/addIdToData";
 import {NavigationModel, NavigationVariables} from "../models/navigation";
 
-type useGetDataType = { navigate: NavigationVariables; data: DataType; loading: boolean, deleteCardById: DeleteById }
+type useGetDataType = {
+    navigate: NavigationVariables;
+    data: DataType;
+    loading: boolean,
+    deleteCardById: DeleteById,
+    update: ({text, id}: { text: string, id: number }) => void,
+}
 
 export const useGetData = (): useGetDataType => {
     const [data, setData] = useState<DataType>([]);
@@ -16,21 +22,27 @@ export const useGetData = (): useGetDataType => {
 
     useEffect(() => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || (workWithLS.setData(PAGE_KEY, PAGES_AMOUNT), PAGES_AMOUNT);
+        const dataFromLS = workWithLS.getData(ARTICLE_LS_KEY) as DataType;
 
-        (async () => {
-            try {
-                const filteredData = addIdToData((await workWithAPI.getData()).data as DataType)
-                    .filter((item) => !removedIds.includes(item.id))
-                    .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1)
-                if (filteredData.length > 0) {
-                    setData(filteredData);
-                    setLoading(false);
-                    workWithLS.setData(ARTICLE_LS_KEY, filteredData);
+        if (!!dataFromLS) {
+            setData(dataFromLS);
+        } else {
+            (async () => {
+                try {
+                    const filteredData = addIdToData((await workWithAPI.getData()).data as DataType)
+                        .filter((item) => !removedIds.includes(item.id))
+                        .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1)
+                    if (filteredData.length > 0) {
+                        setData(filteredData);
+                        setLoading(false);
+                        workWithLS.setData(ARTICLE_LS_KEY, filteredData);
+                    }
+                } catch (e) {
+                    console.log(e);
                 }
-            } catch (e) {
-                console.log(e);
-            }
-        })()
+            })()
+        }
+
     }, []);
 
 
@@ -96,5 +108,11 @@ export const useGetData = (): useGetDataType => {
         }
     }
 
-    return {data, loading, navigate, deleteCardById};
+    const update = ({text, id}: { text: string; id: number }) => {
+        const updatedData = data.map((item) => item.id === id ? ({...item, title: text}) : item);
+        workWithLS.setData(ARTICLE_LS_KEY, updatedData);
+        setData(updatedData);
+    }
+
+    return {data, loading, navigate, deleteCardById, update};
 };

@@ -8,7 +8,3 @@ export const Nav = styled.nav`
   padding: 10px;
   gap: 10px;
 `;
-
-export const Button = styled.button`
-  height: 20px;
-`;
