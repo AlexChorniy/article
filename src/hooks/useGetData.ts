@@ -22,17 +22,17 @@ export const useGetData = (): useGetDataType => {
     const [data, setData] = useState<DataType>([]);
     const [loading, setLoading] = useState(true);
     const [isError, setIsError] = useState(false);
-    const [isPrevButtonDisable, setIsPrevButtonDisable] = useState(false);
-    const [isNextButtonDisable, setIsNextButtonDisable] = useState(false);
+    const [isPrevButtonDisable, setIsPrevButtonDisable] = useState(true);
+    const [isNextButtonDisable, setIsNextButtonDisable] = useState(true);
 
     const removedIds: number[] = workWithLS.getData(DELETED_ID_KEYS) || [];
 
     useEffect(() => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || (workWithLS.setData(PAGE_KEY, PAGES_AMOUNT), PAGES_AMOUNT);
-        const dataFromLS = workWithLS.getData(ARTICLE_LS_KEY) as DataType;
-        const dataOriginalFromLS = workWithLS.getData(ORIGINAL_DATA_KEY) as DataType;
+        const dataFromLS = workWithLS.getData(ARTICLE_LS_KEY) as DataType || [];
+        const dataOriginalFromLS = (workWithLS.getData(ORIGINAL_DATA_KEY) as DataType)?.filter((item) => !removedIds.includes(item.id));
 
-        if (originalData.length === 0) {
+        if (originalData.length === 0 && dataOriginalFromLS?.length > 0) {
             setOriginalData(dataOriginalFromLS);
         }
 
@@ -40,7 +40,6 @@ export const useGetData = (): useGetDataType => {
             setData(dataFromLS);
             setLoading(false);
             workWithNavigationButtons(roundUpArrayLength(dataOriginalFromLS), workWithLS.getData(PAGE_KEY) as number)
-
         } else {
             (async () => {
                 try {
