@@ -31,32 +31,33 @@ export const useGetData = (): useGetDataType => {
     useEffect(() => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || (workWithLS.setData(PAGE_KEY, PAGES_AMOUNT), PAGES_AMOUNT);
         const dataFromLS = workWithLS.getData(ARTICLE_LS_KEY) as DataType;
-        if (!dataFromLS) {
-            (async () => {
-                try {
-                    const getOriginal = addIdToData((await workWithAPI.getData()).data as DataType);
-                    setOriginalData(getOriginal);
-                    const filteredData = getOriginal
-                        .filter((item) => !removedIds.includes(item.id))
-                        .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1)
-                    if (filteredData.length > 0) {
-                        setData(filteredData);
-                        setLoading(false);
-                        workWithLS.setData(ARTICLE_LS_KEY, filteredData);
-                    }
-                } catch (e) {
-                    if (e) {
-                        setIsError(true);
-                        setLoading(false);
-                    }
-                    console.log(e);
-                }
-            })()
-        } else {
+
+        if (dataFromLS?.length > 0) {
             setData(dataFromLS);
             setLoading(false);
         }
 
+        (async () => {
+            try {
+                const getOriginal = addIdToData((await workWithAPI.getData()).data as DataType);
+                workWithNavigationButtons(roundUpArrayLength(getOriginal), workWithLS.getData(PAGE_KEY) as number)
+                setOriginalData(getOriginal);
+                const filteredData = getOriginal
+                    .filter((item) => !removedIds.includes(item.id))
+                    .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1)
+                if (filteredData.length > 0) {
+                    setData(filteredData);
+                    setLoading(false);
+                    workWithLS.setData(ARTICLE_LS_KEY, filteredData);
+                }
+            } catch (e) {
+                if (e) {
+                    setIsError(true);
+                    setLoading(false);
+                }
+                console.log(e);
+            }
+        })()
     }, []);
 
 
@@ -69,7 +70,7 @@ export const useGetData = (): useGetDataType => {
         if (direction === NavigationModel.next) {
             const nextPages = pageNumber + PAGES_AMOUNT;
 
-            workWithNavigationButtons(nextPages, roundedArrayLength);
+            workWithNavigationButtons(roundedArrayLength, nextPages);
 
             if (nextPages <= roundedArrayLength) {
                 workWithLS.setData(PAGE_KEY, nextPages);
@@ -87,7 +88,7 @@ export const useGetData = (): useGetDataType => {
         } else {
             const previousPages = pageNumber - PAGES_AMOUNT;
 
-            workWithNavigationButtons(previousPages, roundedArrayLength);
+            workWithNavigationButtons(roundedArrayLength, previousPages);
 
             if (previousPages > 0) {
                 workWithLS.setData(PAGE_KEY, previousPages);
@@ -103,7 +104,9 @@ export const useGetData = (): useGetDataType => {
         }
     }
 
-    const workWithNavigationButtons = (page: number, maxValueOfArray: number) => {
+    const workWithNavigationButtons = (maxValueOfArray: number, page: number) => {
+        // const page = (workWithLS.getData(PAGE_KEY) as number);/
+        // console.log(page);
         if (page <= PAGES_AMOUNT) {
             setIsPrevButtonDisable(true);
         } else if (page >= maxValueOfArray) {
