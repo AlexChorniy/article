@@ -114,10 +114,10 @@ export const useGetData = (): useGetDataType => {
             setData(filteredData);
             workWithLS.setData(ARTICLE_LS_KEY, filteredData);
 
-            if (filteredData.length === 0) {
+            if (filteredData.length === 0 && pageNumber !== PAGES_AMOUNT) {
                 navigate(NavigationModel.previous)
             }
-            
+
         } catch (e) {
             console.log(e);
         }
