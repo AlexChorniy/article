@@ -7,3 +7,9 @@ export const Main = styled.main`
   background-color: lightgrey;
   overflow-y: scroll;
 `;
+
+export const Wrapper = styled(Main)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;

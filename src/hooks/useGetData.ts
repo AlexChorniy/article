@@ -11,12 +11,14 @@ type useGetDataType = {
     data: DataType;
     loading: boolean,
     deleteCardById: DeleteById,
-    update: ({text, id}: { text: string, id: number }) => void,
+    update: ({text, id}: { text: string, id: number }) => void;
+    isError: boolean;
 }
 
 export const useGetData = (): useGetDataType => {
     const [data, setData] = useState<DataType>([]);
     const [loading, setLoading] = useState(true);
+    const [isError, setIsError] = useState(false);
 
     const removedIds: number[] = workWithLS.getData(DELETED_ID_KEYS) || [];
 
@@ -26,6 +28,7 @@ export const useGetData = (): useGetDataType => {
 
         if (!!dataFromLS) {
             setData(dataFromLS);
+            setLoading(false);
         } else {
             (async () => {
                 try {
@@ -38,6 +41,10 @@ export const useGetData = (): useGetDataType => {
                         workWithLS.setData(ARTICLE_LS_KEY, filteredData);
                     }
                 } catch (e) {
+                    if (e) {
+                        setIsError(true);
+                        setLoading(false);
+                    }
                     console.log(e);
                 }
             })()
@@ -114,5 +121,5 @@ export const useGetData = (): useGetDataType => {
         setData(updatedData);
     }
 
-    return {data, loading, navigate, deleteCardById, update};
+    return {data, loading, navigate, deleteCardById, update, isError};
 };
