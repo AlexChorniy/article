@@ -155,6 +155,7 @@ export const useGetData = (): useGetDataType => {
         workWithLS.setData(ARTICLE_LS_KEY, updatedData);
         workWithLS.setData(ORIGINAL_DATA_KEY, updatedOriginal);
         setData(updatedData);
+        setOriginalData(updatedOriginal);
     }
 
     return {data, loading, navigate, deleteCardById, update, isError, isPrevButtonDisable, isNextButtonDisable};
