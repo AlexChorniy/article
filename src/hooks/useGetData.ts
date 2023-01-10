@@ -68,9 +68,8 @@ export const useGetData = (): useGetDataType => {
 
     const navigate = (direction: NavigationModel) => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
-        const dataWithId = originalData
-            .filter((item) => !removedIds.includes(item.id));
-        const roundedArrayLength = roundUpArrayLength(dataWithId)
+        const dataWithId = workWithData(originalData, 'filterByRemovedIds');
+        const roundedArrayLength = roundUpArrayLength(dataWithId);
 
         if (direction === NavigationModel.next) {
             const nextPages = pageNumber + PAGES_AMOUNT;
@@ -81,8 +80,7 @@ export const useGetData = (): useGetDataType => {
                 workWithLS.setData(PAGE_KEY, nextPages);
             }
 
-            const filteredData = dataWithId
-                .filter((_, index) => index >= nextPages - PAGES_AMOUNT && index < nextPages);
+            const filteredData = workWithData(dataWithId, 'filterByNextPage');
 
             if (filteredData.length > 0) {
                 setData(filteredData);
@@ -99,7 +97,7 @@ export const useGetData = (): useGetDataType => {
                 workWithLS.setData(PAGE_KEY, previousPages);
             }
 
-            const filteredData = dataWithId.filter((_, index) => index <= previousPages - 1 && index > previousPages - PAGES_AMOUNT - 1);
+            const filteredData = workWithData(dataWithId, 'filterByPreviousPage');
 
             if (filteredData.length > 0) {
                 setData(filteredData);
