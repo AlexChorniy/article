@@ -119,7 +119,7 @@ export const useGetData = (): useGetDataType => {
     }
 
     const deleteCardById = (id: number) => {
-        const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
+        const pageNumber: number = workWithLS.getData(PAGE_KEY) || PAGES_AMOUNT;
         const removedIds: number[] = workWithLS.getData(DELETED_ID_KEYS) || [];
 
         if (!removedIds) {
