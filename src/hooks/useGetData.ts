@@ -3,7 +3,7 @@ import {useEffect, useState} from 'react';
 import {DataType, DeleteById} from "../models/data";
 import {workWithLS} from "../utils/workWithLocalStorage";
 import {ARTICLE_LS_KEY, DELETED_ID_KEYS, ORIGINAL_DATA_KEY, PAGE_KEY, PAGES_AMOUNT} from "../utils/constants";
-import {helpers, roundUpArrayLength} from "../utils/helpers";
+import {helpers, roundUpArrayLength, workWithData} from "../utils/helpers";
 import {NavigationModel, NavigationVariables} from "../models/navigation";
 
 type useGetDataType = {
@@ -28,9 +28,8 @@ export const useGetData = (): useGetDataType => {
     const removedIds: number[] = workWithLS.getData(DELETED_ID_KEYS) || [];
 
     useEffect(() => {
-        const pageNumber: number = workWithLS.getData(PAGE_KEY) || (workWithLS.setData(PAGE_KEY, PAGES_AMOUNT), PAGES_AMOUNT);
         const dataFromLS = workWithLS.getData(ARTICLE_LS_KEY) as DataType || [];
-        const dataOriginalFromLS = (workWithLS.getData(ORIGINAL_DATA_KEY) as DataType || []).filter((item) => !removedIds.includes(item.id));
+        const dataOriginalFromLS = workWithData((workWithLS.getData(ORIGINAL_DATA_KEY) as DataType || []), 'filterByRemovedIds');
 
         if (originalData.length === 0 && dataOriginalFromLS?.length > 0) {
             setOriginalData(dataOriginalFromLS);
@@ -47,9 +46,9 @@ export const useGetData = (): useGetDataType => {
                     workWithNavigationButtons(roundUpArrayLength(getOriginal), workWithLS.getData(PAGE_KEY) as number)
                     setOriginalData(getOriginal);
                     workWithLS.setData(ORIGINAL_DATA_KEY, getOriginal);
-                    const filteredData = getOriginal
-                        .filter((item) => !removedIds.includes(item.id))
-                        .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1)
+
+                    const filteredData = workWithData(getOriginal, 'filterByRemovedIdsAndByPageNumber');
+
                     if (filteredData.length > 0) {
                         setData(filteredData);
                         setLoading(false);
