@@ -25,8 +25,6 @@ export const useGetData = (): useGetDataType => {
     const [isPrevButtonDisable, setIsPrevButtonDisable] = useState(true);
     const [isNextButtonDisable, setIsNextButtonDisable] = useState(true);
 
-    const removedIds: number[] = workWithLS.getData(DELETED_ID_KEYS) || [];
-
     useEffect(() => {
         const dataFromLS = workWithLS.getData(ARTICLE_LS_KEY) as DataType || [];
         const dataOriginalFromLS = workWithData((workWithLS.getData(ORIGINAL_DATA_KEY) as DataType || []), 'filterByRemovedIds');
@@ -122,6 +120,7 @@ export const useGetData = (): useGetDataType => {
 
     const deleteCardById = (id: number) => {
         const pageNumber: number = workWithLS.getData(PAGE_KEY) || 0;
+        const removedIds: number[] = workWithLS.getData(DELETED_ID_KEYS) || [];
 
         if (!removedIds) {
             workWithLS.setData(DELETED_ID_KEYS, [id]);
@@ -129,10 +128,7 @@ export const useGetData = (): useGetDataType => {
             workWithLS.setData(DELETED_ID_KEYS, [...removedIds, id]);
         }
 
-        const currentDeletedIds: number[] = workWithLS.getData(DELETED_ID_KEYS) || [];
-        const filteredData = originalData
-            .filter((item) => !currentDeletedIds.includes(item.id))
-            .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1);
+        const filteredData = workWithData(originalData, 'filterByRemovedIdsAndFilterByDeletePages');
 
         if (filteredData.length > 0) {
             setData(filteredData);
