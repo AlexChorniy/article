@@ -80,6 +80,7 @@ export const useGetData = (): useGetDataType => {
 
             const filteredData = workWithData(dataWithId, 'filterByNextPage');
 
+
             if (filteredData.length > 0) {
                 setData(filteredData);
                 setLoading(false);
@@ -96,7 +97,6 @@ export const useGetData = (): useGetDataType => {
             }
 
             const filteredData = workWithData(dataWithId, 'filterByPreviousPage');
-
             if (filteredData.length > 0) {
                 setData(filteredData);
                 setLoading(false);

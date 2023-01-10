@@ -25,10 +25,6 @@ export const workWithData = (
   const removedIds: number[] = workWithLS.getData(DELETED_ID_KEYS) || [];
   const pageNumber: number = getPageKey || (workWithLS.setData(PAGE_KEY, PAGES_AMOUNT), PAGES_AMOUNT);
 
-  const pageNumberNavigation: number = getPageKey || 0;
-  const nextPages = pageNumberNavigation + PAGES_AMOUNT;
-  const previousPages = pageNumberNavigation - PAGES_AMOUNT;
-
   switch (option) {
     case 'filterByRemovedIdsAndByPageNumber':
       return data
@@ -37,13 +33,13 @@ export const workWithData = (
     case 'filterByRemovedIds':
       return data.filter((item) => !removedIds.includes(item.id));
     case 'filterByNextPage':
-      return data.filter((_, index) => index >= nextPages - PAGES_AMOUNT && index < nextPages);
+      return data.filter((_, index) => index >= pageNumber - PAGES_AMOUNT && index < pageNumber);
     case 'filterByPreviousPage':
-      return data.filter((_, index) => index <= previousPages - 1 && index > previousPages - PAGES_AMOUNT - 1);
+      return data.filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1);
     case 'filterByRemovedIdsAndFilterByDeletePages':
       return data
         .filter((item) => !removedIds.includes(item.id))
-        .filter((_, index) => index <= pageNumberNavigation - 1 && index > pageNumberNavigation - PAGES_AMOUNT - 1);
+        .filter((_, index) => index <= pageNumber - 1 && index > pageNumber - PAGES_AMOUNT - 1);
     case 'updateByIdAndText':
       return data.map((item) => (item.id === update?.id ? { ...item, title: update?.text } : item));
     default:
