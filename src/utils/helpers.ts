@@ -8,12 +8,17 @@ export const roundUpArrayLength = <T>(arr: T[]): number => Math.ceil(arr.length 
 
 export const workWithData = (
   data: DataType,
-  option?:
+  option:
     | 'filterByRemovedIdsAndByPageNumber'
     | 'filterByRemovedIds'
     | 'filterByNextPage'
     | 'filterByPreviousPage'
     | 'filterByRemovedIdsAndFilterByDeletePages'
+    | 'updateByIdAndText',
+  update?: {
+    text: string,
+    id: number,
+  }
 ): DataType => {
   const getPageKey: number | undefined = workWithLS.getData(PAGE_KEY);
 
@@ -39,6 +44,8 @@ export const workWithData = (
       return data
         .filter((item) => !removedIds.includes(item.id))
         .filter((_, index) => index <= pageNumberNavigation - 1 && index > pageNumberNavigation - PAGES_AMOUNT - 1);
+    case 'updateByIdAndText':
+      return data.map((item) => (item.id === update?.id ? { ...item, title: update?.text } : item));
     default:
       return data;
   }

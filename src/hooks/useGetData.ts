@@ -142,9 +142,11 @@ export const useGetData = (): useGetDataType => {
     }
 
     const update = ({text, id}: { text: string; id: number }) => {
-        const updatedOriginal = (workWithLS.getData(ORIGINAL_DATA_KEY) as DataType || [])
-            .map((item) => item.id === id ? ({...item, title: text}) : item)
-        const updatedData = data.map((item) => item.id === id ? ({...item, title: text}) : item);
+        const updatedOriginal = workWithData((workWithLS.getData(ORIGINAL_DATA_KEY) as DataType || []), 'updateByIdAndText', {
+            id,
+            text
+        })
+        const updatedData = workWithData(data, 'updateByIdAndText', {id, text});
         workWithLS.setData(ARTICLE_LS_KEY, updatedData);
         workWithLS.setData(ORIGINAL_DATA_KEY, updatedOriginal);
         setData(updatedData);
