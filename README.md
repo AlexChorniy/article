@@ -3,15 +3,18 @@
 This task should be solved using React, and preferably with TypeScript. Try to keep best practices, performance and
 clean code in mind when you solve this task. Upload the task to Github/Gitlab/Bitbucket or something equivalent once you
 are done.
+
 You are allowed to use third-party libraries, but keep in mind that the solution should showcase your own abilities. A
 styling library, design system or data fetching library is fine, but you should avoid using something like a table
 library that handles all of the list logic for you.
 The task
+
 The following endpoint returns a JSON response with a list of articles:
 https://storage.googleapis.com/aller-structure-task/article_list.json
 Create a React app that fetches the data from that endpoint and displays the articles in a list. The list should display
 10 articles at a time and there should be a navigation there that allows us to show the next 10 or the previous 10
 articles.
+
 Each article in the list should have an "edit"-button and a "delete"-button. The "edit"-button should allow us to edit
 the title of the article and the "delete"-button should delete the article. As a bonus task, you can implement some kind
 of client side logic to persist the changes across reloads using localStorage.
